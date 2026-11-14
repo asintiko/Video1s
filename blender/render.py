@@ -39,6 +39,7 @@ def parse_args():
     p.add_argument("--scale", type=float, default=1.0)
     p.add_argument("--frames", default=f"0-{C.FRAMES - 1}")
     p.add_argument("--step", type=int, default=1)
+    p.add_argument("--part", default="1/1", help="I/N: render only every N-th job, starting with job I (parallel workers)")
     p.add_argument("--time", default=None)
     p.add_argument("--out", default=None)
     p.add_argument("--engine", default="eevee", choices=["eevee", "cycles"])
@@ -76,6 +77,11 @@ def main():
         f0, f1 = (int(v) for v in a.frames.split("-")) if "-" in a.frames else (int(a.frames), int(a.frames))
         for f in range(f0, f1 + 1, a.step):
             jobs.append((os.path.join(out_dir, f"f{f:04d}"), f / C.FPS, f))
+
+    part_i, part_n = (int(v) for v in a.part.split("/"))
+    if not 1 <= part_i <= part_n:
+        raise SystemExit(f"--part {a.part}: expected I/N with 1 <= I <= N")
+    jobs = jobs[part_i - 1::part_n]
 
     done = 0
     t_start = time.time()

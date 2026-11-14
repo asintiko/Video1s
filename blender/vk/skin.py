@@ -94,7 +94,7 @@ def tube(points, radii, sides=16, per_seg=5, cap_start="round", cap_end="round",
 
     cap(0, -tang[0], cap_start, True)
     cap(n - 1, tang[-1], cap_end, False)
-    return np.concatenate(verts), faces
+    return np.concatenate(verts), [f[::-1] for f in faces]      # reversed: normals point outwards
 
 
 def ellipsoid(center, radii, segments=24, rings=16):
@@ -177,3 +177,200 @@ def merge(*meshes):
         faces.extend(tuple(i + off for i in face) for face in f)
         off += len(v)
     return np.concatenate(verts), faces
+
+
+# ---------------------------------------------------------------- more primitives (character modelling)
+def xform(mesh, m=None, scale=None, offset=None):
+    """Transform a (verts, faces) mesh by a 4×4 matrix and / or a per-axis scale and an offset."""
+    v = np.asarray(mesh[0], dtype=np.float64)
+    if scale is not None:
+        v = v * np.asarray(scale, dtype=np.float64)
+    if m is not None:
+        m = np.asarray(m, dtype=np.float64)
+        v = v @ m[:3, :3].T + m[:3, 3]
+    if offset is not None:
+        v = v + np.asarray(offset, dtype=np.float64)
+    return v, mesh[1]
+
+
+def mirror_x(mesh):
+    """Mirror a mesh in the plane x = 0 (faces are flipped so normals stay outward)."""
+    v = np.asarray(mesh[0], dtype=np.float64) * [-1.0, 1.0, 1.0]
+    return v, [tuple(f[::-1]) for f in mesh[1]]
+
+
+def superellipsoid(center, radii, e_ns=1.0, e_ew=1.0, segments=32, rings=20):
+    """Ellipsoid with squareness control: exponents 1 = round, < 1 = boxy, > 1 = pinched.
+    e_ns shapes the vertical profile, e_ew the horizontal section."""
+    v, f = ellipsoid((0.0, 0.0, 0.0), (1.0, 1.0, 1.0), segments, rings)
+
+    def sp(x, e):
+        return np.sign(x) * np.abs(x) ** e
+
+    z = v[:, 2]
+    rxy = np.sqrt(np.maximum(0.0, 1.0 - z * z))
+    ang = np.arctan2(v[:, 1], v[:, 0])
+    out = np.stack([sp(rxy, e_ns) * sp(np.cos(ang), e_ew), sp(rxy, e_ns) * sp(np.sin(ang), e_ew), sp(z, e_ns)], axis=1)
+    return out * np.asarray(radii, dtype=np.float64) + np.asarray(center, dtype=np.float64), f
+
+
+def lathe(profile, segments=32, center=(0.0, 0.0, 0.0), scale=(1.0, 1.0), closed=False):
+    """Revolve a profile [(radius, z), ...] about the Z axis.  A radius of 0 at either end makes
+    a pole (closed cap); `closed` joins the last profile point back to the first (ring shapes
+    such as hat brims with thickness).  scale = (sx, sy) makes the section elliptical."""
+    prof = [(float(r), float(z)) for r, z in profile]
+    c = np.asarray(center, dtype=np.float64)
+    ang = np.linspace(0, 2 * np.pi, segments, endpoint=False)
+    cs, sn = np.cos(ang) * scale[0], np.sin(ang) * scale[1]
+    verts, index = [], []
+    count = 0
+    for r, z in prof:
+        if r <= 1e-9:
+            verts.append(np.array([[c[0], c[1], c[2] + z]]))
+            index.append((count, 1))
+            count += 1
+        else:
+            verts.append(np.stack([c[0] + r * cs, c[1] + r * sn, np.full_like(ang, c[2] + z)], axis=1))
+            index.append((count, segments))
+            count += segments
+    faces = []
+    pairs = list(zip(range(len(prof) - 1), range(1, len(prof))))
+    if closed:
+        pairs.append((len(prof) - 1, 0))
+    for i, j in pairs:
+        (a, na), (b, nb) = index[i], index[j]
+        for k in range(segments):
+            k2 = (k + 1) % segments
+            if na == 1 and nb == 1:
+                continue
+            if na == 1:
+                faces.append((a, b + k2, b + k))
+            elif nb == 1:
+                faces.append((a + k, a + k2, b))
+            else:
+                faces.append((a + k, a + k2, b + k2, b + k))
+    # profiles are usually given bottom → top, which makes the faces above point inwards
+    v = np.concatenate(verts)
+    if _signed_volume(v, faces) < 0:
+        faces = [tuple(f[::-1]) for f in faces]
+    return v, faces
+
+
+def _signed_volume(v, faces):
+    vol = 0.0
+    for f in faces:
+        a = v[f[0]]
+        for k in range(1, len(f) - 1):
+            vol += float(np.dot(a, np.cross(v[f[k]], v[f[k + 1]])))
+    return vol
+
+
+def outward(mesh):
+    """Flip the faces of a closed mesh if they point inwards."""
+    v, f = mesh
+    return (v, [tuple(x[::-1]) for x in f]) if _signed_volume(np.asarray(v), f) < 0 else (v, f)
+
+
+def ring(points, radii, sides=10, ref=None):
+    """Closed tube through a closed loop of points (no smoothing: pass a dense loop).  `ref` is the
+    direction of the second radius (default: the normal of the loop's plane).
+    radii: scalar, or per-point scalars, or per-point (r_side, r_ref) pairs."""
+    p = np.asarray(points, dtype=np.float64)
+    n = len(p)
+    r = np.asarray(radii, dtype=np.float64)
+    if r.ndim == 0:
+        r = np.full(n, float(r))
+    if r.ndim == 1:
+        r = np.stack([r, r], axis=1)
+    tang = np.roll(p, -1, axis=0) - np.roll(p, 1, axis=0)
+    tang /= np.linalg.norm(tang, axis=1, keepdims=True)
+    if ref is None:     # normal of the loop's plane (Newell)
+        ref = np.cross(p, np.roll(p, -1, axis=0)).sum(axis=0)
+        ref = ref / np.linalg.norm(ref)
+    ref = np.asarray(ref, dtype=np.float64)
+    ang = np.linspace(0, 2 * np.pi, sides, endpoint=False)
+    verts = []
+    b_prev = None
+    for i in range(n):
+        b = ref - tang[i] * np.dot(ref, tang[i])
+        if np.linalg.norm(b) < 1e-5:
+            b = b_prev if b_prev is not None else np.cross(tang[i], [1.0, 0.0, 0.0])
+        b /= np.linalg.norm(b)
+        b_prev = b
+        a = np.cross(tang[i], b)
+        verts.append(p[i] + np.outer(np.cos(ang), a) * r[i, 0] + np.outer(np.sin(ang), b) * r[i, 1])
+    faces = []
+    for i in range(n):
+        j = (i + 1) % n
+        for k in range(sides):
+            k2 = (k + 1) % sides
+            faces.append((i * sides + k, i * sides + k2, j * sides + k2, j * sides + k))
+    return outward((np.concatenate(verts), faces))
+
+
+def superellipse_loop(center, rx, rz, exponent=2.0, n=48, axis_x=(1.0, 0.0, 0.0), axis_z=(0.0, 0.0, 1.0)):
+    """Closed loop of points on a superellipse (exponent 2 = ellipse, 4 = rounded square)."""
+    t = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    e = 2.0 / exponent
+    cx = np.sign(np.cos(t)) * np.abs(np.cos(t)) ** e * rx
+    cz = np.sign(np.sin(t)) * np.abs(np.sin(t)) ** e * rz
+    return np.asarray(center, dtype=np.float64) + np.outer(cx, axis_x) + np.outer(cz, axis_z)
+
+
+def disc(loop, center=None):
+    """Triangle fan over a closed loop of points (flat lens / cap).  Returns (verts, faces)."""
+    p = np.asarray(loop, dtype=np.float64)
+    c = p.mean(axis=0) if center is None else np.asarray(center, dtype=np.float64)
+    n = len(p)
+    return np.concatenate([p, c[None, :]]), [(i, (i + 1) % n, n) for i in range(n)]
+
+
+def rounded_box(center, half, radius, steps=4):
+    """Box with rounded edges and corners (a sphere with its octants pushed apart)."""
+    seg = 4 * steps
+    v, f = ellipsoid((0.0, 0.0, 0.0), (1.0, 1.0, 1.0), seg, 2 * steps)
+    h = np.maximum(np.asarray(half, dtype=np.float64) - radius, 0.0)
+    out = v * radius + np.sign(np.round(v, 9)) * h
+    return out + np.asarray(center, dtype=np.float64), f
+
+
+def spike(base, tip, radius, bend=(0.0, 0.0, 0.0), sides=10, flat=1.0, ref=(0.0, -1.0, 0.0), tip_radius=0.0015, per_seg=5):
+    """Tapered, optionally curved and flattened tuft / lock of hair from base to tip."""
+    b, t = np.asarray(base, dtype=np.float64), np.asarray(tip, dtype=np.float64)
+    mid = (b + t) / 2 + np.asarray(bend, dtype=np.float64)
+    q1, q3 = b + (mid - b) * 0.55 + (t - b) * 0.0, mid + (t - mid) * 0.5 + np.asarray(bend) * 0.25
+    pts = [b, q1, mid, q3, t]
+    rr = [radius, radius * 0.95, radius * 0.72, radius * 0.42, tip_radius]
+    return tube(pts, [(r, r * flat) for r in rr], sides=sides, per_seg=per_seg, ref=ref)
+
+
+def vertex_normals(verts, faces):
+    """Area-weighted vertex normals for a uniform (M, k) face array."""
+    v = np.asarray(verts, dtype=np.float64)
+    f = np.asarray(faces)
+    n = np.zeros_like(v)
+    k = f.shape[1]
+    fn = np.zeros((len(f), 3))
+    for i in range(1, k - 1):
+        fn += np.cross(v[f[:, i]] - v[f[:, 0]], v[f[:, i + 1]] - v[f[:, 0]])
+    for i in range(k):
+        np.add.at(n, f[:, i], fn)
+    ln = np.linalg.norm(n, axis=1, keepdims=True)
+    return n / np.where(ln > 1e-12, ln, 1.0)
+
+
+def seg_dist(p, a, b):
+    """Distance of points p (N, 3) to segment a-b, and the parameter along it (0 at a … 1 at b,
+    unclamped).  Returns (distance to the clamped segment, t)."""
+    p = np.asarray(p, dtype=np.float64)
+    a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    ab = b - a
+    t = (p - a) @ ab / float(ab @ ab)
+    q = a + np.clip(t, 0.0, 1.0)[:, None] * ab
+    return np.linalg.norm(p - q, axis=1), t
+
+
+def gauss(p, center, radius):
+    """exp(-|p - c|² / r²) falloff, radius may be per-axis."""
+    d = (np.asarray(p, dtype=np.float64) - np.asarray(center, dtype=np.float64)) / np.asarray(radius, dtype=np.float64)
+    return np.exp(-np.sum(d * d, axis=1))

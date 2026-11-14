@@ -1,7 +1,10 @@
 """Rig diagnostic: one character at the origin, free camera views, named test poses.
 blender -b --factory-startup --python blender/dev/pose_sheet.py -- <variant> <out_dir> <pose1,pose2 | choreo:t1,t2> [views] [model_module]
 
-variant: singer | sax | emo.  views: front,three,threeR,side,back,face,hands.  Env: RES (width px), SAMPLES."""
+variant: singer | sax | emo.  views: front,three,threeR,side,back,face,hands.  Env: RES (width px), SAMPLES.
+Choreography mode: times in seconds, comma separated; a token a:b:step expands to a range
+(b excluded), e.g. choreo:0:15:0.5 = one frame per beat.  Every frame is labelled with its
+time and beat (LABEL=0 switches the label off).  File names sort by time, then view."""
 import importlib, math, os, sys
 import bpy
 import numpy as np
@@ -58,6 +61,22 @@ def base():
     return p
 
 
+# face test poses (use with the 'face' view)
+FACES = dict(
+    neutral=dict(),
+    smile=dict(smile=1.0),
+    sing=dict(jaw=0.8, smile=0.7, brow_L=0.6, brow_R=0.6),
+    ooh=dict(jaw=0.5, mouth_round=1.0, brow_L=0.4, brow_R=0.4),
+    blink=dict(blink_L=1.0, blink_R=1.0, smile=0.8),
+    wink=dict(blink_L=1.0, smile=1.0, brow_R=0.8, look=(0.6, 0.0)),
+    frown=dict(brow_L=-1.0, brow_R=-1.0, smile=0.0, look=(0.0, -0.5)),
+    puff=dict(cheeks=1.0, mouth_round=0.6, blink_L=0.9, blink_R=0.9, brow_L=0.5, brow_R=0.5),
+    lookL=dict(look=(1.0, 0.4), smile=0.6, jaw=0.25),
+    lookR=dict(look=(-1.0, -0.4), smile=0.6),
+    shout=dict(jaw=1.0, smile=0.2, brow_L=1.0, brow_R=1.0, look=(0.0, 0.6)),
+)
+
+
 def named(name):
     p = base()
     if name == "rest":
@@ -98,6 +117,9 @@ def named(name):
         ug, lg = propspec.SAX["upper_grip"], propspec.SAX["lower_grip"]
         p.arm_L = Arm(hand=(ug[0] + 0.075, ug[1] + 0.03, ug[2] - 0.01), pole=(0.8, 0.5, -0.4), space="prop:sax", fingers=(-1.0, -0.25, 0.1), palm=(-0.2, 0.0, 0.3), curl=0.55)
         p.arm_R = Arm(hand=(lg[0] - 0.075, lg[1] + 0.03, lg[2] - 0.01), pole=(-0.8, 0.5, -0.4), space="prop:sax", fingers=(1.0, -0.25, 0.1), palm=(0.2, 0.0, 0.3), curl=0.55)
+    elif name in FACES:
+        for k, v in FACES[name].items():
+            setattr(p, k, v)
     else:
         raise SystemExit("unknown pose " + name)
     return p
@@ -111,16 +133,41 @@ jobs = []
 if what.startswith("choreo:"):
     ch = importlib.import_module("vk.choreo." + variant)
     from vk import characters
+    times = []
     for ts in what[7:].split(","):
-        t = float(ts)
+        if ":" in ts:
+            a, b, st = (float(x) for x in ts.split(":"))
+            times += [a + i * st for i in range(int(round((b - a) / st)))]
+        else:
+            times.append(float(ts))
+    for t in times:
         def fn(t=t):
             p = ch.pose(t); characters.follow_through(sk, rig.mark, ch.pose, p, t); return p
         jobs.append((f"t{t:06.3f}".replace(".", "_"), fn, t))
 else:
     for n in what.split(","):
         jobs.append((n, lambda n=n: named(n), 0.0))
+label = None
+if what.startswith("choreo:") and os.environ.get("LABEL", "1") != "0":
+    fc = bpy.data.curves.new("label", "FONT")
+    fc.size = 0.10
+    label = bpy.data.objects.new("label", fc)
+    scene.collection.objects.link(label)
+    lm = bpy.data.materials.new("label")
+    lm.use_nodes = True
+    nt = lm.node_tree
+    nt.nodes.clear()
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs[0].default_value = (1, 1, 1, 1)
+    em.inputs[1].default_value = 2.0
+    out_n = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(em.outputs[0], out_n.inputs[0])
+    fc.materials.append(lm)
+    label.parent = cam
 for name, fn, t in jobs:
     pose = fn()
+    if label is not None:
+        label.data.body = f"{t:.3f}s  b{t * 2:g}"
     frames = rig.apply(pose)
     model.update(state, rig, pose, frames, t)
     util.set_time(t, 15.0)
@@ -131,6 +178,9 @@ for name, fn, t in jobs:
         d = np.array([0, 0, tz]) - pos
         cam.rotation_euler = (math.atan2(math.hypot(d[0], d[1]), -d[2]), 0, math.atan2(-d[0], d[1]))
         cam_d.lens = 85 if v not in ("face", "hands") else 110
+        if label is not None:
+            label.location = (-0.48 * 85.0 / cam_d.lens, 0.52 * 85.0 / cam_d.lens, -3.0)
+            label.scale = (85.0 / cam_d.lens,) * 3
         scene.render.filepath = os.path.join(out, f"{name}_{v}.png")
         bpy.ops.render.render(write_still=True)
         print("[rigtest]", scene.render.filepath)
