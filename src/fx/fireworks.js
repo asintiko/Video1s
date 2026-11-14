@@ -53,8 +53,8 @@ function buildCycle(L, cyc, ci) {
       P.push({
         kind: 1, b: k, vx: d.x * d.sp * RADIUS * KD, vy: d.y * d.sp * RADIUS * KD,
         tx: tp.x, ty: tp.y, edge: tp.e, li: tp.li,
-        g0: cyc.gather[0] + clamp(dist / 900) * gatherLen * 0.35 + rnd() * gatherLen * 0.12,
-        swirl: (rnd() - 0.5) * 70,
+        g0: cyc.gather[0] + (1 - clamp(dist / 600)) * gatherLen * 0.22 + rnd() * gatherLen * 0.1,
+        swirl: (rnd() - 0.5) * 120,
         d0: cyc.dissolve[0] + (tp.li / 6) * dissLen * 0.22 + rnd() * dissLen * 0.16,
         dLife: dissLen * (0.5 + rnd() * 0.12), dvx: (rnd() - 0.5) * 50, dvy: -20 + rnd() * 30,
         size: tp.e ? 1.05 : 0.9 + rnd() * 0.25, ph: rnd() * TAU, fq: 7 + rnd() * 9,
@@ -92,7 +92,9 @@ export function createFireworks(L, platform) {
       out.trail = tau < 0.75;
     } else {
       out.trail = tau < 0.5 && t < p.g0;
-      const e = smootherstep(p.g0, c.gather[1], t);
+      // gather easing: zero velocity at both ends, most of the travel early (settles gently)
+      const gu = clamp((t - p.g0) / (c.gather[1] - p.g0));
+      const e = 1 - Math.pow(1 - gu, 4) * (1 + 4 * gu);
       if (e > 0) {
         const sw = Math.sin(Math.PI * e) * p.swirl;
         const dx = p.tx - x, dy = p.ty - y, dl = Math.hypot(dx, dy) || 1;
@@ -252,10 +254,22 @@ export function createFireworks(L, platform) {
         if (!particleState(c, p, t, st) || st.a <= 0.01) continue;
         if (st.x < view.x0 - 30 || st.x > view.x1 + 30) continue;
         const s = st.size;
-        ctx.globalAlpha = clamp(st.a * 0.42);
-        ctx.drawImage(sprites.glow(st.col), st.x - 9 * s, st.y - 9 * s, 18 * s, 18 * s);
-        ctx.globalAlpha = clamp(st.a);
-        ctx.drawImage(sprites.spark(st.col), st.x - 3.2 * s, st.y - 3.2 * s, 6.4 * s, 6.4 * s);
+        if (p.kind === 1 && t >= c.gather[0]) {
+          // letter particles: small twinkling cores so the word visibly consists of sparks
+          const tw = 0.72 + 0.28 * Math.sin(p.fq * 1.3 * t + p.ph * 2.1);
+          ctx.globalAlpha = clamp(st.a * 0.24);
+          ctx.drawImage(sprites.glow(st.col), st.x - 6.5 * s, st.y - 6.5 * s, 13 * s, 13 * s);
+          ctx.globalAlpha = clamp(st.a * tw);
+          ctx.drawImage(sprites.spark(st.col), st.x - 3 * s, st.y - 3 * s, 6 * s, 6 * s);
+          glowCtx.globalAlpha = clamp(st.a * 0.1);
+          glowCtx.drawImage(sprites.glow(st.col), st.x - 16 * s, st.y - 16 * s, 32 * s, 32 * s);
+          continue;
+        } else {
+          ctx.globalAlpha = clamp(st.a * 0.42);
+          ctx.drawImage(sprites.glow(st.col), st.x - 9 * s, st.y - 9 * s, 18 * s, 18 * s);
+          ctx.globalAlpha = clamp(st.a);
+          ctx.drawImage(sprites.spark(st.col), st.x - 3.2 * s, st.y - 3.2 * s, 6.4 * s, 6.4 * s);
+        }
         glowCtx.globalAlpha = clamp(st.a * 0.5);
         glowCtx.drawImage(sprites.glow(st.col), st.x - 16 * s, st.y - 16 * s, 32 * s, 32 * s);
       }

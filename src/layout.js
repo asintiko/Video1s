@@ -3,6 +3,7 @@
 //  * spanned:    one continuous panorama across Left | Center | Right, sliced per screen
 import { SCREENS, SCREEN_ORDER, WORLD_H } from './config.js';
 import { clamp } from './math.js';
+import { TEXT_WIDTH } from './assets/vanking-text.js';
 
 const CHAR_SCALE = 0.335; // brand-SVG units → world units (character ≈ 360 units tall)
 
@@ -16,7 +17,8 @@ function baseLayout(worldW, xs, opts = {}) {
   ];
   const textH = opts.textH ?? 205;
   const text = { cx: opts.textX ?? xc, cy: 215, h: textH };
-  const burstSpread = opts.burstSpread ?? clamp(spread * 0.52, 430, 760);
+  // one burst centred over each third of the word → short, radial paths into the letters
+  const burstSpread = (TEXT_WIDTH * textH) / 3;
   const bursts = [
     { x: text.cx - burstSpread, y: 205, launchX: xl + (text.cx - burstSpread - xl) * 0.55 },
     { x: text.cx, y: 178, launchX: xc + 300 },
@@ -52,7 +54,6 @@ export function spannedLayout() {
   const centers = [0, 1, 2].map((i) => (edges[i] + edges[i + 1]) / 2);
   const L = baseLayout(worldW, centers, {
     textX: centers[1],
-    burstSpread: 900,
     moon: { x: centers[0] - 900, y: 150, r: 48 },
   });
   const views = SCREEN_ORDER.map((k, i) => ({ name: k, x0: edges[i], x1: edges[i + 1], px: SCREENS[k] }));

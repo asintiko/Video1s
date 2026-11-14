@@ -30,8 +30,9 @@ const MOVES = {
   },
   sweep(p, s, sh) {
     const u = 0.5 - 0.5 * Math.cos(Math.PI * p + (s > 0 ? 0 : Math.PI));
-    const ax = sh.x + s * 235, ay = sh.y + 20, bx = sh.x - s * 250, by = sh.y + 75;
-    return { x: ax + (bx - ax) * u, y: ay + (by - ay) * u - 80 * Math.sin(Math.PI * u), bend: s * Math.cos(Math.PI * u), curl: 0.1, wrist: 0.6 * (u - 0.5) };
+    // sweep across the chest, dipping below the chin so the arm stays visible
+    const ax = sh.x + s * 235, ay = sh.y + 50, bx = sh.x - s * 205, by = sh.y + 125;
+    return { x: ax + (bx - ax) * u, y: ay + (by - ay) * u + 45 * Math.sin(Math.PI * u), bend: s * Math.cos(Math.PI * u), curl: 0.1, wrist: 0.6 * (u - 0.5) };
   },
   pops(p, s, sh) {
     const f = p - Math.floor(p);
