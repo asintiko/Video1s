@@ -9,13 +9,18 @@ and their sparks assemble into the glowing white word **VANKING**.
 
 * Spec: [`docs/TECHNICAL_SPECIFICATION_VANKING.UZ.txt`](docs/TECHNICAL_SPECIFICATION_VANKING.UZ.txt)
 * Progress log: [`PROGRESS.md`](PROGRESS.md)
-* Loop validation report: [`docs/loop-validation-left.md`](docs/loop-validation-left.md)
+* Loop validation reports: [`docs/loop-validation.md`](docs/loop-validation.md)
 * Brand source art (official mascot SVGs): [`assets/brand/`](assets/brand)
 
 ## Deliverables
 
-Full-resolution renders are attached to the GitHub Release **v1.0** (too large for git).
-Small previews and the soundtrack live in [`deliverables/`](deliverables).
+Full-resolution renders are attached to the GitHub Release
+[**v1.0**](https://github.com/asintiko/Video1s/releases/tag/v1.0) (too large for git).
+Small previews and the soundtrack live in [`deliverables/`](deliverables):
+[3-screen overview](deliverables/preview_STANDALONE_3screens.mp4) ·
+[spanned panorama](deliverables/preview_SPANNED_panorama.mp4) ·
+[5× loop test (75 s)](deliverables/preview_loop_test_5x_center.mp4) ·
+[soundtrack.wav](deliverables/soundtrack.wav)
 
 | Set | Left 6240 × 1872 | Center 11752 × 1872 | Right 6864 × 1872 |
 |---|---|---|---|

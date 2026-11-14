@@ -4,8 +4,9 @@ _Every change is committed and pushed to `main` immediately (spec: development w
 
 ## Current status
 
-**Phase 6 — Final renders: in progress.** All animation, fireworks, soundtrack and loop validation are done;
-full-resolution renders for the three screens are being produced and attached to a GitHub Release.
+**Phase 6 — Delivered (v1.0).** Final renders for all three screens are done in two layout variants
+(standalone + spanned), validated as seamless loops, and published as GitHub Release `v1.0`;
+previews, the 5× loop test and the soundtrack are in [`deliverables/`](deliverables).
 
 ## Completed work
 
@@ -21,18 +22,20 @@ full-resolution renders for the three screens are being produced and attached to
 | 8 | 2026-11-14 | Soundtrack (`audio/`): kick/clap/808 hats/toms/crash, disco-funk octave bass, synth sax, 3-voice talk-box vocal ("Oh-oh… Hey! Van-king!"), electro arp & stabs, launch whistles, booms, crackles, shimmer, glitter fall. Rendered on a circular 15 s buffer; reverb/delay run to steady state; −13 LUFS integrated. |
 | 9 | 2026-11-14 | Render pipeline (`scripts/render.mjs`): parallel workers → x264 segments → lossless concat + AAC; loop validator (`scripts/validate-loop.mjs`). Fixed: motion kinks (smooth unions), over-fast "pops", order-dependent canvas state, preview edge column, bloom edge artefact. |
 | 10 | 2026-11-14 | Polish: letters visibly made of sparkling particles; bursts centred per word-third + early-travel easing so the word emerges cleanly from the sparks; emo sweep path; tamer flash light. |
+| 11 | 2026-11-14 | Final renders (H.264 High L6.0, 30 fps, 450 frames, CRF 16, AAC): STANDALONE left 59 MB · center 61 MB · right 61 MB; SPANNED left 14 MB · center 53 MB · right 13 MB. Center screen rendered with 2 workers (x264 needs ≈2.1 GB per encoder at 11752 px). |
+| 12 | 2026-11-14 | Loop validation PASS for standalone left/center/right and spanned left/center; seam check on the delivered MP4 (frames 447–449 → 0–2 continuous). Previews: 3-screen overview, spanned panorama, 75 s 5× loop test. |
 
 ## Loop validation (latest)
 
 * `render(15 s)` is **pixel-identical** to `render(0 s)`; every pose is exactly periodic (`pose(15) − pose(0) = 0`).
 * Seam 449 → 0 is an ordinary transition (frame difference ≈ the median of all 450 transitions).
 * Audio: the 5× loop file repeats **sample-identically**; the seam jump equals the same beat in other phrases.
-* Report: [`docs/loop-validation-left.md`](docs/loop-validation-left.md).
+* Reports for every layout: [`docs/loop-validation.md`](docs/loop-validation.md).
 
 ## Next steps
 
-1. Final renders: standalone left / center / right ✅ left · ⏳ right · ⏳ center; spanned set.
-2. Publish renders as a GitHub Release, add preview videos + soundtrack to `deliverables/`.
+* Optional on request: 50/60 fps versions, HEVC/ProRes/HAP encodes for a specific media server, or a
+  layout matched to the venue drawing (screen gaps/angles) once it is available.
 
 ## Design decisions & notes
 
