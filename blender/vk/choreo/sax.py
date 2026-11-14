@@ -38,24 +38,27 @@ _NT = [n[0] for n in _NOTES]
 _STEPS = [clamp((84.0 - n[2]) / 20.0) * 6.0 for n in _NOTES]
 
 
+_PAT = [[clamp(st - k) for k in range(6)] for st in _STEPS]
+
+
 def _fingering(b):
     """Six key values 0..1 (3 per hand) — the same mapping as score.sax_state, but eased over
     about two frames around every note start instead of stepping."""
-    i = bisect.bisect_right(_NT, b - 0.05) - 1
+    i = bisect.bisect_right(_NT, b - 0.07) - 1
     j = (i + 1) % len(_NT)
-    u = wrap_delta(_NT[j], b, NB)
-    st = _STEPS[i] + (_STEPS[j] - _STEPS[i]) * smoothstep(-0.05, 0.05, u)
-    return [clamp(st - k) for k in range(6)]
+    w = smoothstep(-0.07, 0.07, wrap_delta(_NT[j], b, NB))
+    pi, pj = _PAT[i], _PAT[j]
+    return [pi[k] + (pj[k] - pi[k]) * w for k in range(6)]
 
 
 def _pulse(b):
     """Accent 0..1 on every note start (quick attack, slower release)."""
-    v = 0.0
+    q = 1.0
     for t0, _d, _n, vel, _vib in _NOTES:
         u = wrap_delta(t0, b, NB)
         if -0.12 < u < 0.4:
-            v = max(v, vel * (smoothstep(-0.12, 0.0, u) if u <= 0.0 else 1.0 - smoothstep(0.0, 0.4, u)))
-    return v
+            q *= 1.0 - vel * (smoothstep(-0.12, 0.0, u) if u <= 0.0 else 1.0 - smoothstep(0.0, 0.4, u))
+    return 1.0 - q
 
 
 def _vibrato(b):
