@@ -4,7 +4,8 @@ import { singerPose, drawSinger } from './characters/singer.js';
 import { saxPose, drawSax } from './characters/sax.js';
 import { emoPose, drawEmo } from './characters/emo.js';
 import { drawContactShadow } from './characters/rig.js';
-import { hillY } from './scene/environment.js';
+import { hillY, drawGroundLight } from './scene/environment.js';
+import { createFireworks } from './fx/fireworks.js';
 
 export const CAST = [
   { key: 'emo', hill: 'left', pose: emoPose, draw: drawEmo },
@@ -77,7 +78,7 @@ function drawPerformer(ctx, env, member, t, lights, layers) {
       const r = L0.r * k;
       const g = ll.createRadialGradient(lx, ly, 0, lx, ly, r);
       const [cr, cg, cb] = L0.c;
-      g.addColorStop(0, `rgba(${cr},${cg},${cb},${Math.min(1, L0.i)})`);
+      g.addColorStop(0, `rgba(${cr},${cg},${cb},${0.3 * Math.min(1, L0.i)})`);
       g.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
       ll.fillStyle = g;
       ll.fillRect(0, 0, w, h);
@@ -97,11 +98,12 @@ function drawPerformer(ctx, env, member, t, lights, layers) {
 export function createShow(platform, layout, view, pxW, pxH, opts = {}) {
   const k = pxH / layout.worldH;
   const layers = makeLayers(platform, layout.charScale * k);
-  const fx = opts.fireworks ?? null;
+  const fx = opts.fireworks === false ? null : createFireworks(layout, platform);
   return createRenderer(platform, layout, view, pxW, pxH, {
     sky: (ctx, t, env) => fx?.drawSky(ctx, t, env),
     stage: (ctx, t, env) => {
       const lights = fx ? fx.lights(t, env) : [];
+      drawGroundLight(ctx, layout, env.view, lights);
       for (const m of CAST) drawPerformer(ctx, env, m, t, lights, layers);
     },
     post: (ctx, t, env) => fx?.drawPost?.(ctx, t, env),

@@ -37,6 +37,44 @@ function hillPath(ctx, h) {
   ctx.closePath();
 }
 
+function addHillShape(ctx, h) {
+  const n = 120;
+  for (let i = 0; i <= n; i++) {
+    const u = -1 + (2 * i) / n;
+    const x = h.x + u * h.halfW;
+    const y = h.base - (h.base - h.top) * Math.pow(Math.max(0, 1 - u * u), 0.6);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.lineTo(h.x + h.halfW, 1100);
+  ctx.lineTo(h.x - h.halfW, 1100);
+  ctx.closePath();
+}
+
+/** Firework light falling on the hills and meadow (additive, clipped to the ground). */
+export function drawGroundLight(ctx, L, view, lights) {
+  const act = lights.filter((l) => l.i > 0.012);
+  if (!act.length) return;
+  ctx.save();
+  ctx.beginPath();
+  for (const h of L.hills) if (h.x + h.halfW > view.x0 && h.x - h.halfW < view.x1) addHillShape(ctx, h);
+  ctx.moveTo(view.x0 - 10, 1010);
+  for (let x = view.x0 - 10; x <= view.x1 + 10; x += 12) ctx.lineTo(x, 905 + 10 * terrainNoise(x + 777, 4));
+  ctx.lineTo(view.x1 + 10, 1010);
+  ctx.closePath();
+  ctx.clip();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const l of act) {
+    const r = l.r * 0.8;
+    const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, r);
+    g.addColorStop(0, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},${0.3 * Math.min(1, l.i)})`);
+    g.addColorStop(0.45, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},${0.11 * Math.min(1, l.i)})`);
+    g.addColorStop(1, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},0)`);
+    ctx.fillStyle = g;
+    ctx.fillRect(Math.max(view.x0, l.x - r), 600, Math.min(view.x1, l.x + r) - Math.max(view.x0, l.x - r), 420);
+  }
+  ctx.restore();
+}
+
 const hillOrder = (L) => [...L.hills].sort((a, b) => (a.role === 'center') - (b.role === 'center'));
 /** Topmost surface y at x over all stage hills (front-most hill wins visually). */
 export function groundY(L, x) {
