@@ -1,7 +1,8 @@
 // Video renderer: parallel workers → H.264 segments → concat (+ soundtrack) per screen.
 //
 //   node scripts/render.mjs --screens left,center,right [--mode standalone|spanned]
-//        [--scale 1] [--fps 30] [--workers 3] [--crf 16] [--preset slow] [--out out/video] [--tag NAME]
+//        [--scale 1] [--fps 30] [--workers 3] [--workers-center 2] [--crf 16] [--preset slow]
+//        [--out out/video] [--tag NAME]
 //
 // Frames are sampled at t = i / fps for i = 0 … 15·fps − 1, so playback of the file on repeat is
 // exactly periodic (frame 15·fps would be identical to frame 0).
@@ -65,7 +66,8 @@ async function master() {
     const segDir = `${outDir}/_seg_${tag}_${screen}`;
     rmSync(segDir, { recursive: true, force: true });
     mkdirSync(segDir, { recursive: true });
-    const n = Math.min(workers, total);
+    // big frames need more memory per x264 encoder: allow e.g. --workers-center 2
+    const n = Math.min(Number(arg(`workers-${screen}`, workers)), total);
     const bounds = Array.from({ length: n + 1 }, (_, i) => Math.round((i * total) / n));
     const t0 = Date.now();
     console.log(`▶ ${tag} ${screen}: ${W}x${H} @ ${fps} fps, ${total} frames, ${n} workers`);

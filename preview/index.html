@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VANKING.UZ — Mole Music Show · live preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #07081a; color: #dfe3ff; font: 14px/1.4 system-ui, sans-serif; }
+  header { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 10px 16px; background: #10132e; }
+  header b { color: #fff; }
+  select, button, input { background: #1c2150; color: #fff; border: 1px solid #3a4190; border-radius: 6px; padding: 4px 8px; }
+  main { padding: 12px; }
+  .screens { display: flex; gap: 10px; align-items: flex-start; }
+  .screens.stack { flex-direction: column; }
+  canvas { display: block; max-width: 100%; height: auto; box-shadow: 0 0 0 1px #2a2f6a; }
+  #t { font-variant-numeric: tabular-nums; min-width: 6ch; display: inline-block; }
+  small { opacity: .7; }
+</style>
+</head>
+<body>
+<header>
+  <b>VANKING.UZ — Mole Music Show</b>
+  <label>Layout <select id="mode"><option value="standalone">Standalone (full scene per screen)</option><option value="spanned">Spanned (one panorama across 3 screens)</option></select></label>
+  <label>Scale <select id="scale"><option>0.1</option><option selected>0.15</option><option>0.2</option><option>0.25</option></select></label>
+  <button id="play">▶ Play</button>
+  <label><input type="checkbox" id="loop5"> stop after 5 loops</label>
+  <span>t = <span id="t">0.00</span> s</span>
+  <small>Serve the repo root over HTTP (e.g. <code>python3 -m http.server</code>) and open /preview/</small>
+</header>
+<main><div id="screens" class="screens"></div></main>
+<script type="module">
+import { layoutFor } from '../src/layout.js';
+import { SCREENS, SCREEN_ORDER, LOOP } from '../src/config.js';
+import { createShow } from '../src/show.js';
+
+const platform = { createCanvas: (w, h) => Object.assign(document.createElement('canvas'), { width: w, height: h }), Path2D };
+const $ = (id) => document.getElementById(id);
+let shows = [], playing = false, startAt = 0, audio = null, raf = 0;
+
+function build() {
+  const mode = $('mode').value, scale = Number($('scale').value);
+  const holder = $('screens');
+  holder.innerHTML = '';
+  holder.className = 'screens' + (mode === 'standalone' ? ' stack' : '');
+  shows = SCREEN_ORDER.map((name) => {
+    const L = layoutFor(mode, name);
+    const view = L.views.find((v) => v.name === name) || L.views[0];
+    const W = Math.round((SCREENS[name].w * scale) / 2) * 2, H = Math.round((SCREENS[name].h * scale) / 2) * 2;
+    const show = createShow(platform, L, view, W, H);
+    const out = Object.assign(document.createElement('canvas'), { width: W, height: H, title: `${name} ${SCREENS[name].w}×${SCREENS[name].h}` });
+    holder.appendChild(out);
+    return { show, out: out.getContext('2d') };
+  });
+  draw(0);
+}
+function draw(t) {
+  for (const s of shows) s.out.drawImage(s.show.render(t), 0, 0);
+  $('t').textContent = (t % LOOP).toFixed(2);
+}
+async function loadAudio() {
+  if (audio) return audio;
+  const ctx = new AudioContext();
+  for (const url of ['../deliverables/soundtrack.wav', '../out/audio/soundtrack.wav']) {
+    try { const r = await fetch(url); if (r.ok) { audio = { ctx, buf: await ctx.decodeAudioData(await r.arrayBuffer()) }; return audio; } } catch {}
+  }
+  audio = { ctx, buf: null };
+  return audio;
+}
+async function toggle() {
+  playing = !playing;
+  $('play').textContent = playing ? '❚❚ Pause' : '▶ Play';
+  if (!playing) { cancelAnimationFrame(raf); audio?.src?.stop(); return; }
+  const a = await loadAudio();
+  await a.ctx.resume();
+  if (a.buf) { a.src = a.ctx.createBufferSource(); a.src.buffer = a.buf; a.src.loop = true; a.src.start(); }
+  startAt = a.ctx.currentTime;
+  const tick = () => {
+    const t = a.ctx.currentTime - startAt;
+    if ($('loop5').checked && t >= 5 * LOOP) { toggle(); return; }
+    draw(t);
+    raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+$('play').onclick = toggle;
+$('mode').onchange = build;
+$('scale').onchange = build;
+build();
+</script>
+</body>
+</html>
