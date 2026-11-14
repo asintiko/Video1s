@@ -53,8 +53,10 @@ function drawPerformer(ctx, env, member, t, lights, layers) {
   lc.globalCompositeOperation = 'source-over';
   lc.globalAlpha = 1;
   lc.clearRect(0, 0, w, h);
+  lc.save();
   lc.setTransform(sk, 0, 0, sk, ox - oxi - BOX.x0 * sk, oy - oyi - BOX.y0 * sk);
   member.draw(lc, pose, t);
+  lc.restore();
 
   // ---- lighting, restricted to the character's pixels
   lc.setTransform(1, 0, 0, 1, 0, 0);
@@ -78,7 +80,7 @@ function drawPerformer(ctx, env, member, t, lights, layers) {
       const r = L0.r * k;
       const g = ll.createRadialGradient(lx, ly, 0, lx, ly, r);
       const [cr, cg, cb] = L0.c;
-      g.addColorStop(0, `rgba(${cr},${cg},${cb},${0.3 * Math.min(1, L0.i)})`);
+      g.addColorStop(0, `rgba(${cr},${cg},${cb},${0.17 * Math.min(1, L0.i)})`);
       g.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
       ll.fillStyle = g;
       ll.fillRect(0, 0, w, h);

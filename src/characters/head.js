@@ -49,10 +49,13 @@ function drawSingingMouth(ctx, open, shape) {
   const D = 30 + open * 66;
   ctx.fillStyle = '#3b1d10';
   ctx.beginPath(); ctx.ellipse(622, 468 + D * 0.42, 34, 10 + D * 0.18, 0, 0, Math.PI * 2); ctx.fill();
+  const tg = smoothstep(0.02, 0.3, open); // tongue fades in with opening → no pop vs. the closed grin
+  ctx.globalAlpha = tg;
   ctx.fillStyle = '#c0634a';
   ctx.beginPath(); ctx.ellipse(626, 476 + D * 0.95, 44, 12 + D * 0.22, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = 'rgba(232,140,110,0.55)';
   ctx.beginPath(); ctx.ellipse(616, 470 + D * 0.88, 16, 5 + D * 0.06, -0.2, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
   drawTeeth(ctx);
   ctx.restore();
   ctx.lineWidth = 6; ctx.lineJoin = 'round'; ctx.strokeStyle = '#7a452b';

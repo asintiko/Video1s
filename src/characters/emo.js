@@ -35,9 +35,9 @@ const MOVES = {
   },
   pops(p, s, sh) {
     const f = p - Math.floor(p);
-    let q = smootherstep(0, 0.15, f) - smootherstep(0.5, 0.65, f);
+    let q = smootherstep(0, 0.3, f) - smootherstep(0.5, 0.8, f);
     if (s < 0) q = 1 - q;
-    const x1 = sh.x + s * 205, y1 = sh.y - 175, x2 = sh.x + s * 75, y2 = sh.y + 215;
+    const x1 = sh.x + s * 200, y1 = sh.y - 150, x2 = sh.x + s * 120, y2 = sh.y + 95;
     return { x: x2 + (x1 - x2) * q, y: y2 + (y1 - y2) * q, bend: s * (2 * q - 1), curl: 0.6 * (1 - q), wrist: -0.6 * q };
   },
   wave(p, s, sh) {

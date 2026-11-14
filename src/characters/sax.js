@@ -18,12 +18,14 @@ export function saxPose(t) {
   const ss = saxState(t);
   const bounce = 0.5 + 0.5 * Math.cos(TAU * b);
   const sway = Math.sin((TAU * b) / 6);
-  let raise = 0;
-  for (const [c, w] of RAISES) raise = Math.max(raise, bb(b, c, w));
+  let notRaise = 1;
+  for (const [c, w] of RAISES) notRaise *= 1 - bb(b, c, w);
+  let raise = 1 - notRaise; // smooth union (no kinks)
   const spot = smoothstep(15.4, 16.4, b) * (1 - smoothstep(23.6, 24.6, b)); // 8–12 s: sax takes the lead
   raise = clamp(raise + 0.22 * spot);
-  let dip = 0;
-  for (const [c, w] of DIPS) dip = Math.max(dip, bb(b, c, w));
+  let notDip = 1;
+  for (const [c, w] of DIPS) notDip *= 1 - bb(b, c, w);
+  const dip = 1 - notDip;
   const pose = {
     hip: { x: 12 * sway, y: RIG.hipY + 6 * bounce + 26 * dip + 7 * ss.longNote },
     torso: 0.055 * Math.sin((TAU * b) / 6 + 0.6) - 0.11 * raise,

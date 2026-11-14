@@ -142,7 +142,7 @@ export function createFireworks(L, platform) {
           const r = rocketPos(c, B, t);
           out.push({ x: r.x, y: r.y, c: B.color, i: 0.05 + 0.05 * r.u, r: 900 });
         } else {
-          out.push({ x: B.x, y: B.y, c: B.color, i: 0.75 * Math.exp(-tau / 0.16) + 0.28 * Math.exp(-tau / 0.65), r: 2600 });
+          out.push({ x: B.x, y: B.y, c: B.color, i: (0.62 * Math.exp(-tau / 0.12) + 0.3 * Math.exp(-tau / 0.6)) * smoothstep(0, 0.04, tau), r: 2600 });
         }
       }
       const txt = smoothstep(c.gather[0] + 0.2, c.hold[0], t) * (1 - smoothstep(c.dissolve[0], c.dissolve[0] + 0.5, t));
@@ -263,18 +263,21 @@ export function createFireworks(L, platform) {
     ctx.restore();
     // ---- bloom: blur the low-res emissive buffer and add it on top of the sky
     blurCtx.setTransform(1, 0, 0, 1, 0, 0);
-    blurCtx.globalCompositeOperation = 'copy';
+    blurCtx.globalCompositeOperation = 'source-over';
+    blurCtx.globalAlpha = 1;
+    blurCtx.clearRect(0, 0, gw, gh);
     blurCtx.filter = `blur(${Math.max(1.5, 7 * k * gs)}px)`;
     blurCtx.drawImage(glowCanvas, 0, 0);
     blurCtx.filter = 'none';
-    blurCtx.globalCompositeOperation = 'source-over';
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = 'lighter';
+    // map the bloom buffer exactly onto the frame (gw/gh were rounded up)
+    const sw = pxW * gs, sh = pxH * gs;
     ctx.globalAlpha = 0.9;
-    ctx.drawImage(blurCanvas, 0, 0, gw, gh, 0, 0, gw / gs, gh / gs);
+    ctx.drawImage(blurCanvas, 0, 0, sw, sh, 0, 0, pxW, pxH);
     ctx.globalAlpha = 0.45;
-    ctx.drawImage(glowCanvas, 0, 0, gw, gh, 0, 0, gw / gs, gh / gs);
+    ctx.drawImage(glowCanvas, 0, 0, sw, sh, 0, 0, pxW, pxH);
     ctx.restore();
   }
 

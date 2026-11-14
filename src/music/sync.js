@@ -35,17 +35,20 @@ export function saxState(t) {
     if (u >= -0.02 && u < s.d + 0.02) cur = { s, u };
     if (u < 0 && u > -0.5) next = s;
   }
-  // phrase activity: blowing pressure persists across short gaps inside a lick
-  let blow = 0;
+  // phrase activity (smooth union of per-note envelopes → no kinks): blowing pressure persists
+  // across short gaps inside a lick; longNote rises during sustained notes and eases out after.
+  let notBlow = 1, notLong = 1;
   for (const s of SAX) {
     const u = wrapDelta(s.t, b, LOOP_BEATS);
-    blow = Math.max(blow, smoothstep(-0.12, 0.0, u) * (1 - smoothstep(s.d, s.d + 0.35, u)));
+    notBlow *= 1 - smoothstep(-0.12, 0.0, u) * (1 - smoothstep(s.d, s.d + 0.35, u));
+    if (s.d >= 0.45) notLong *= 1 - smoothstep(0.1, 0.4, u) * (1 - smoothstep(s.d - 0.05, s.d + 0.3, u));
   }
+  const blow = 1 - notBlow;
   const note = cur ? cur.s.n : next ? next.n : 64;
   // 3 fingers per paw; a simple, consistent mapping pitch → key pattern (lower notes = more keys)
   const steps = clamp((84 - note) / 20) * 6;
   const fingers = [0, 1, 2, 3, 4, 5].map((i) => clamp(steps - i));
-  const longNote = cur && cur.s.d >= 0.45 ? smoothstep(0.1, 0.4, cur.u) : 0;
+  const longNote = 1 - notLong;
   return { blow, playing: !!cur, note, fingers, accent: cur ? cur.s.v : 0, longNote, vib: cur?.s.vib ? 1 : 0 };
 }
 

@@ -66,7 +66,7 @@ export function drawGroundLight(ctx, L, view, lights) {
   for (const l of act) {
     const r = l.r * 0.8;
     const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, r);
-    g.addColorStop(0, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},${0.3 * Math.min(1, l.i)})`);
+    g.addColorStop(0, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},${0.24 * Math.min(1, l.i)})`);
     g.addColorStop(0.45, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},${0.11 * Math.min(1, l.i)})`);
     g.addColorStop(1, `rgba(${l.c[0]},${l.c[1]},${l.c[2]},0)`);
     ctx.fillStyle = g;
