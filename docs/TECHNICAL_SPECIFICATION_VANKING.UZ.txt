@@ -1,0 +1,597 @@
+DEVELOPMENT WORKFLOW: Commit and push each change to Git immediately after it is made. Maintain a Markdown file in the repository that records project progress, completed work, current status, next steps, and any relevant notes. Update this file as work progresses.
+
+FINAL RENDER REQUIREMENT: Render the final content to fit the three screens shown in the layout, with the following dimensions: 6240 × 1872, 11752 × 1872, and 6864 × 1872.
+
+TECHNICAL SPECIFICATION
+
+VANKING.UZ — Animated Mascot Music Show
+
+1. Project Overview
+
+Project Name: VANKING — Mole Music Show
+
+Brand: VANKING.UZ
+
+Video Duration: Exactly 15 seconds
+
+Animation Style: High-quality stylized 3D animation with expressive cartoon characters, smooth movements, vibrant lighting, detailed particle effects, and a playful musical atmosphere.
+
+Primary Objective:
+
+Create a visually engaging, energetic, and humorous animated music performance featuring three mole mascots representing VANKING.UZ.
+
+The animation takes place on a green meadow with three rounded hills under a star-filled evening sky.
+
+Each mole has a unique outfit, musical role, personality, and choreography.
+
+Colorful fireworks periodically illuminate the sky, and their falling sparks transform into the glowing white word "VANKING" before dissolving.
+
+Critical Requirement: Perfect Seamless Loop
+
+The entire 15-second animation must form a continuous, seamless loop.
+
+The final frame must transition naturally into the first frame without any visible cut, jump, camera reset, lighting change, character teleportation, or interruption in movement.
+
+The animation should look like one endless musical performance when played repeatedly.
+
+---
+
+2. Environment and Scene Design
+
+2.1. Landscape
+
+The scene features a wide, vibrant green meadow containing three distinct rounded grassy hills.
+
+Central Hill:
+
+- Positioned in the middle of the composition.
+- Slightly taller and wider than the other two hills.
+- Serves as the main performance stage.
+- The lead singer mole stands at its highest point.
+
+Left Hill:
+
+- Positioned to the left of the central hill.
+- Slightly lower than the central hill.
+- Contains the emo-style mole performing Tecktonik dance moves.
+
+Right Hill:
+
+- Positioned to the right of the central hill.
+- Similar in height to the left hill.
+- Contains the jazz musician mole playing a saxophone.
+
+All three hills must remain clearly visible throughout the animation.
+
+The hills should have smooth, rounded shapes with stylized grass, subtle surface variation, and soft shadows.
+
+The composition must maintain enough separation between the characters so their movements do not overlap visually.
+
+2.2. Sky and Atmosphere
+
+Time of Day: Late evening transitioning into nighttime.
+
+Sky Appearance:
+
+- Deep blue upper sky.
+- Subtle violet and indigo gradients near the horizon.
+- Numerous small, naturally distributed stars.
+- Gentle star twinkling.
+- Clear visibility without heavy clouds.
+- A magical yet visually balanced nighttime atmosphere.
+
+Lighting:
+
+- Soft ambient moonlight.
+- Subtle cool highlights on the characters.
+- Gentle shadows on the hills.
+- Dynamic illumination from fireworks.
+- Firework flashes briefly illuminate the grass, characters, costumes, and musical instruments.
+
+The environment must maintain consistent lighting throughout the loop.
+
+Star twinkling and other ambient effects must also be seamlessly repeatable.
+
+---
+
+3. Character Design and Animation
+
+All three characters must use the same recognizable VANKING.UZ mole mascot design.
+
+Their facial features, body proportions, fur colors, nose shape, eyes, and overall visual identity must remain consistent with the original brand mascot.
+
+Only their outfits, accessories, facial expressions, and performance styles should differ.
+
+3.1. Character One — The Lead Singer
+
+Position: Center hill.
+
+Role: Main vocalist and central performer.
+
+Outfit: Michael Jackson-Inspired Stage Costume
+
+- Black performance jacket with sparkling decorative details.
+- White shirt or T-shirt.
+- Black fitted trousers.
+- White socks.
+- Black polished dancing shoes.
+- One sparkling white glove.
+- Black fedora hat.
+
+Prop: Handheld microphone.
+
+Animation Requirements:
+
+The central mole performs an energetic pop-inspired stage routine while singing.
+
+Required movements:
+
+1. Hold the microphone close to the mouth.
+2. Animate mouth movements synchronized with the vocal performance.
+3. Rhythmically sway the shoulders and upper body.
+4. Tap one foot to the beat.
+5. Perform small heel-and-toe dance movements.
+6. Occasionally
+
+
+slide one foot across the ground.
+7. Tilt the head with confidence.
+8. Briefly touch or adjust the fedora.
+9. Use the free hand for expressive stage gestures.
+10. Perform subtle body rotations during musical accents.
+
+Performance Personality:
+
+Confident, charismatic, theatrical, and playful.
+
+The central mole must clearly appear to be the lead performer.
+
+Loop Requirement:
+
+All dance movements must form a repeatable choreography cycle.
+
+The final body pose, foot placement, microphone position, and head orientation must connect naturally to the opening pose.
+
+---
+
+3.2. Character Two — The Jazz Saxophonist
+
+Position: Right hill.
+
+Role: Saxophone player.
+
+Outfit: Classic Jazz Musician
+
+- Burgundy or dark purple suit jacket.
+- Light-colored shirt.
+- Elegant bow tie.
+- Matching trousers.
+- Stylish jazz hat.
+- Classic formal shoes.
+
+Prop: Golden saxophone.
+
+Animation Requirements:
+
+1. Hold the saxophone naturally with both hands.
+2. Keep the mouth aligned with the mouthpiece.
+3. Animate finger movements over the instrument keys.
+4. Gently sway from side to side.
+5. Nod the head in rhythm.
+6. Occasionally raise the saxophone during musical accents.
+7. Slightly bend the knees while playing.
+8. Add subtle reflections and golden highlights to the instrument.
+9. Synchronize the playing animation with the audible saxophone melody.
+
+Performance Personality:
+
+Relaxed, stylish, expressive, and slightly humorous.
+
+The saxophonist should look fully engaged in the performance.
+
+Loop Requirement:
+
+The saxophone playing cycle must connect seamlessly across the beginning and end of the video.
+
+There must be no sudden changes in hand placement, saxophone angle, or body orientation.
+
+---
+
+3.3. Character Three — The Emo Tecktonik Dancer
+
+Position: Left hill.
+
+Role: Energetic background dancer.
+
+Outfit: 2000s Emo Fashion
+
+- Black T-shirt with pink or purple graphic accents.
+- Tight black trousers.
+- Dark sneakers with contrasting shoelaces.
+- Black wristbands.
+- Asymmetrical long emo hairstyle partially covering one eye.
+- Belt with metallic accessories.
+
+Animation Requirements:
+
+The mole must perform recognizable Tecktonik dance choreography.
+
+Required movements:
+
+1. Fast circular arm movements.
+2. Alternating arm rotations around the head.
+3. Cross-body hand movements.
+4. Sharp elbow and wrist transitions.
+5. Fluid arm waves.
+6. Quick rhythmic footwork.
+7. Small steps and weight shifts.
+8. Occasional upper-body rotations.
+9. Faster combinations during musical accents.
+10. Continuous dancing throughout the entire video.
+
+Important:
+
+The choreography must resemble authentic Tecktonik dance rather than random arm movements.
+
+Arm movements should be energetic, coordinated, and visually readable.
+
+Performance Personality:
+
+Energetic, eccentric, expressive, and slightly rebellious.
+
+Loop Requirement:
+
+The choreography must be designed as a closed motion sequence.
+
+The final arm positions, leg positions, and body orientation must transition smoothly into the opening movements.
+
+---
+
+4. Fireworks and VANKING Text Formation
+
+The fireworks are one of the most important visual elements of the animation.
+
+They must look colorful, dynamic, and magical while remaining visually consistent with the cartoon environment.
+
+4.1. Firework Colors
+
+Three main colors must be used:
+
+- Blue.
+- Red.
+- Green.
+
+Each firework must have its own recognizable color.
+
+4.2. Launch Timing
+
+Fireworks must launch at four-second intervals during the 15-second animation.
+
+Launch times:
+
+- 0 seconds.
+- 4 seconds.
+- 8 seconds.
+- 12 seconds.
+
+The launch at 0 seconds is part of the repeating sequence and must connect seamlessly to the previous loop.
+
+The 12-second launch must complete its text formation and particle dissolution before the 15-second loop boundary.
+
+4.3. Firework Animation Sequence
+
+Stage 1 — Launch
+
+Three glowing firework rockets rise into the sky from behind the hills.
+
+Each rocket leaves a sparkling trail.
+
+The rockets should rise smoothly with slight variations in their trajectories.
+
+Stage 2 — Explosion
+
+The rockets explode in the upper part of the sky.
+
+Each explos
+
+
+ion creates a large spherical burst of glowing particles.
+
+The explosions must feature:
+
+- Bright initial flashes.
+- Expanding particle patterns.
+- Colored glowing trails.
+- Small secondary sparks.
+- Natural particle dispersion.
+- Brief colored illumination of the environment.
+
+Stage 3 — Text Formation
+
+After each explosion, a portion of the falling particles begins moving into a coordinated formation.
+
+The blue, red, and green sparks gradually transition to bright white.
+
+The particles assemble into the word:
+
+VANKING
+
+The letters must be formed entirely from glowing white particles.
+
+The word must not appear as a flat graphic, static overlay, or instant text replacement.
+
+The formation must visibly emerge from the firework sparks.
+
+Stage 4 — Text Display
+
+Once fully formed, the word "VANKING" remains clearly visible for approximately one second.
+
+Text appearance:
+
+- Pure white color.
+- Soft glowing edges.
+- Slight shimmering.
+- Clear and readable letter shapes.
+- Consistent letter spacing.
+- Positioned in the upper central area of the sky.
+
+Stage 5 — Particle Dissolution
+
+After the one-second display:
+
+1. The letters begin breaking apart.
+2. Individual particles detach from the text.
+3. Sparks fall downward under simulated gravity.
+4. The particles gradually shrink.
+5. Their brightness decreases.
+6. The sparks evaporate and disappear before reaching the ground.
+
+The dissolution must feel smooth, elegant, and natural.
+
+Important Requirements:
+
+- The text must always read exactly "VANKING".
+- No missing, duplicated, distorted, or incorrect letters.
+- Fireworks must not cover the characters' faces.
+- The text must remain legible against the night sky.
+- Each firework cycle may have subtle variations in spark distribution.
+- The overall effect must be repeatable without creating a visible loop discontinuity.
+
+---
+
+5. Camera and Composition
+
+Primary Camera Angle:
+
+A frontal wide shot with a slightly low viewing angle.
+
+The entire performance area must remain visible.
+
+Composition:
+
+- Lead singer centered.
+- Tecktonik dancer on the left.
+- Saxophonist on the right.
+- All three hills visible.
+- Sufficient open sky above the characters for fireworks and text formation.
+
+Camera Movement:
+
+The camera should remain mostly stationary.
+
+Very subtle rhythmic camera movement is acceptable, provided it does not interfere with the seamless loop.
+
+If camera movement is implemented, it must follow a mathematically closed animation path that returns to its exact starting position and orientation at the 15-second boundary.
+
+Avoid:
+
+- Sudden zooms.
+- Abrupt camera cuts.
+- Unnecessary perspective changes.
+- Camera shake that hides the characters.
+- Framing changes that crop the fireworks or text.
+
+---
+
+6. Music and Sound Design
+
+Music Style:
+
+Energetic pop-funk with jazz and electronic dance influences.
+
+The soundtrack should combine the musical personalities of all three characters.
+
+Musical Elements:
+
+- Rhythmic drums.
+- Funk-inspired bass.
+- Catchy saxophone melody.
+- Electronic dance synthesizers.
+- Pop-style vocal performance or stylized vocalization.
+- Distinct rhythmic accents for the dancers.
+
+Sound Effects:
+
+- Firework rocket launches.
+- Colorful firework explosions.
+- Sparkling particle sounds.
+- Subtle magical shimmer during text formation.
+- Soft fading effects as the particles dissolve.
+
+Audio Loop Requirement:
+
+The soundtrack must also form a perfect 15-second loop.
+
+The ending and beginning must connect without audible clicks, silence, tempo interruptions, or sudden changes in volume.
+
+Music, choreography, and sound effects must remain synchronized across repeated playback.
+
+---
+
+7. Detailed 15-Second Timeline
+
+Time| Animation Events
+0.0–1.0 s| All three moles are already performing. The first set of fireworks launches from behind the hills.
+1.0–2.0 s| Fireworks explode in blue, red, and green. Falling sparks transform into the white word VANKING.
+2.0–3.0 s| The word VANKING remains visible for approximately one second.
+3.0–4.0 s| The letters dissolve into falling particles and disappear. Characters continue performing.
+4.0–8.
+
+
+0 s| Second firework sequence, including launch, explosion, text formation, one-second display, and dissolution.
+8.0–12.0 s| Third firework sequence. The lead singer performs additional gestures, the saxophonist emphasizes the melody, and the dancer continues Tecktonik choreography.
+12.0–15.0 s| Fourth firework sequence, slightly faster than the previous ones, completing the explosion, one-second VANKING display, and particle dissolution before the loop ends. All characters return smoothly to their opening animation poses.
+
+Timing Note:
+
+The fourth fireworks sequence must fit within the final three seconds. Its timing may be compressed slightly while preserving the complete visual effect.
+
+---
+
+8. Critical Seamless Loop Implementation
+
+This is a mandatory technical requirement, not an optional visual enhancement.
+
+The finished animation must repeat indefinitely without the viewer noticing where one playback cycle ends and the next begins.
+
+8.1. Character Animation
+
+All character movements must use closed animation cycles.
+
+At the exact loop boundary:
+
+- Body positions must match.
+- Head rotations must match.
+- Arm and leg positions must match.
+- Microphone and saxophone positions must match.
+- Clothing and accessory positions must match.
+- Character movement velocity must remain continuous.
+
+Simply placing characters in approximately similar poses is not sufficient.
+
+Their motion must continue naturally across the boundary.
+
+8.2. Environment
+
+The following must remain continuous:
+
+- Sky gradient.
+- Star positions.
+- Star brightness.
+- Grass movement.
+- Ambient lighting.
+- Character shadows.
+- Camera position.
+- Camera orientation.
+
+Any animated environmental effects must repeat without visible resets.
+
+8.3. Firework Particles
+
+No particle system may abruptly reset at the loop boundary.
+
+Particles from the final firework must fully dissolve before the loop ends, unless their motion is deliberately continued through a matching initial particle state.
+
+The first firework launch must integrate naturally with the final frame.
+
+8.4. Camera
+
+The camera must have identical position, rotation, and framing at the beginning and end of the loop.
+
+Any camera movement must be periodic and continuous.
+
+8.5. Audio
+
+The soundtrack must:
+
+- Maintain consistent rhythm.
+- Have no audible transition.
+- Avoid sudden volume changes.
+- Use properly aligned musical phrases.
+- Preserve continuity across the loop boundary.
+
+8.6. Loop Validation
+
+The final animation must be tested by repeating the 15-second video at least five consecutive times.
+
+The transition between repetitions must be visually and audibly imperceptible.
+
+Special attention must be paid to the transition from 14.99 seconds to 0.00 seconds.
+
+---
+
+9. Animation Quality Requirements
+
+The final animation must satisfy the following requirements:
+
+Character Quality
+
+- Consistent mascot proportions.
+- No facial deformation.
+- No extra or missing limbs.
+- Stable clothing geometry.
+- Correct hand-to-prop interaction.
+- Smooth and expressive facial animation.
+
+Motion Quality
+
+- Natural weight shifting.
+- Smooth movement transitions.
+- No sudden animation snapping.
+- Proper foot contact with the ground.
+- No foot sliding unless intentionally part of the choreography.
+- Clear synchronization with music.
+
+Visual Effects
+
+- High-quality firework particles.
+- Natural glowing trails.
+- Dynamic colored lighting.
+- Smooth particle transitions.
+- Readable particle-based typography.
+- No visual flickering or particle glitches.
+
+Visual Consistency
+
+- Consistent lighting and shadows.
+- Stable character appearances.
+- No unexpected changes in outfits.
+- No shifting environmental geometry.
+- No camera discontinuities.
+- No visible loop boundaries.
+
+---
+
+10. Final Deliverable Requirements
+
+The final deliverable must be a fully animated 15-second musical scene featuring:
+
+1. Three recognizable VANKING.UZ mole mascots.
+2. A green meadow with three distinct hills.
+3. A star-filled evening sky.
+4. A central Michael Jackson-inspired mole singing and dancing.
+5. A right-side jazz mole playing a golden saxophone
+
+
+.
+6. A left-side emo mole performing Tecktonik choreography.
+7. Blue, red, and green fireworks launching every four seconds.
+8. Firework sparks transforming into the glowing white word VANKING.
+9. The word remaining visible for approximately one second before dissolving into falling particles.
+10. A perfectly seamless 15-second audiovisual loop.
+
+11. Final Creative Direction
+
+The animation should feel like a miniature outdoor concert performed by three charismatic mole mascots.
+
+The overall mood must be:
+
+Fun, energetic, stylish, slightly absurd, musical, and memorable.
+
+The central singer should attract the most attention, while the saxophonist and Tecktonik dancer add humor, personality, and visual rhythm.
+
+The fireworks should create a recurring spectacular moment, with the VANKING brand name naturally emerging from the glowing sparks.
+
+The most important technical priority is seamless looping.
+
+The animation must feel like a continuous, never-ending performance rather than a conventional video with a recognizable beginning and ending.
