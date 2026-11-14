@@ -1,0 +1,17 @@
+{
+  "name": "vanking-mole-music-show",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VANKING.UZ Mole Music Show - 15 s seamless loop animation renderer",
+  "scripts": {
+    "extract": "node scripts/extract-mascot.mjs",
+    "still": "node scripts/still.mjs",
+    "audio": "node audio/build-soundtrack.mjs",
+    "render": "node scripts/render.mjs"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.1.1",
+    "fast-xml-parser": "^5.12.1"
+  }
+}
